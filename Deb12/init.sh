@@ -19,3 +19,43 @@ iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 #Save Configuration
 netfilter-persistent save
+
+# Configure Fail2Ban
+# SSH Configuration:
+# nano /etc/fail2ban/jail.conf
+# [sshd]
+# enabled = true
+# port = 22
+# filter = sshd
+# logpath = /var/log/auth.log
+# maxretry = 5
+# bantime = 10m
+
+
+
+# Configure Auditd
+# max_log_file = 10
+
+# Add rules to /etc/audit/rules.d/audit.rules
+# -w /etc/passwd -p wa -k passwd_change
+# -w /etc/shadow -p wa -k shadow_change
+# -w /var/log/wtmp -p wa -k logins
+# -w /var/log/btmp -p wa -k failed_logins
+
+
+
+# psad internal port scanner detection
+ENABLE_AUTO_IDS  Y;
+
+EMAIL_ADDRESSES "Enter Email Address"
+iptables -A INPUT -j LOG
+iptables -A FORWARD -j LOG
+netfilter-persistent save
+
+# lynis hardening scanner
+lynis audit system --quiet --report-file ~/lynis_scans.txt
+
+# Initial virus scan
+freshclam
+
+clamscan -r --quiet / --log=/var/log/clamav/clamav_detections.log
