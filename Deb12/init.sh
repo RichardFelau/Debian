@@ -5,8 +5,10 @@
 apt update -y && apt upgrade -y
 
 # Install base packages
-apt install iptables fail2ban auditd logwatch rsyslog clamav apparmor htop glances lynis psad iptables-persistent
-
+DEBIAN_FRONTEND=noninteractive apt install -y iptables fail2ban auditd logwatch rsyslog clamav apparmor htop glances lynis psad iptables-persistent
+# Save default configs
+iptables-save > /etc/iptables/rules.v4
+ip6tables-save > /etc/iptables/rules.v6
 
 
 # Initial Config
@@ -34,6 +36,7 @@ netfilter-persistent save
 
 
 # Configure Auditd
+# nano /etc/audit/auditd.conf
 # max_log_file = 10
 
 # Add rules to /etc/audit/rules.d/audit.rules
